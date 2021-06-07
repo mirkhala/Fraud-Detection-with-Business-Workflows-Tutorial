@@ -1,0 +1,22 @@
+---
+apiVersion: machinelearning.seldon.io/v1
+kind: SeldonDeployment
+metadata:
+  labels:
+    app: seldon
+  name: modelfull
+spec:
+  annotations:
+    project_name: ccfd-dev
+    deployment_version: '0.1'
+  name: modelfull
+  oauth_key: oauth-key
+  oauth_secret: oauth-secret
+  predictors:
+  - graph:
+      children: []
+      implementation: SKLEARN_SERVER
+      modelUri: s3://ccdata-1f48081f-efe6-423e-9381-301a05bafc6c/uploaded/
+      name: classifier
+    name: default
+    replicas: 1
