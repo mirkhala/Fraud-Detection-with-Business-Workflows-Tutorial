@@ -1,0 +1,196 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "76160ec8-b45e-4337-8fff-de55735ffe0e",
+  "primary_pipeline": "dca39065-327f-4dfa-b134-709d3329eb3a",
+  "pipelines": [
+    {
+      "id": "dca39065-327f-4dfa-b134-709d3329eb3a",
+      "nodes": [
+        {
+          "id": "af1a5138-97d3-453f-85e1-dcc0ef7c3882",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "filename": "load_data.ipynb",
+            "runtime_image": "magdamartinez/anaconda3-boto3:latest",
+            "env_vars": [
+              "ENDPOINT_URL=http://s3-rook-ceph.apps.cluster-mlops-4f2f.mlops-4f2f.sandbox1485.opentlc.com",
+              "AWS_ACCESS_KEY_ID=DUCLUBW5EOGUTIM5UU83",
+              "AWS_SECRET_ACCESS_KEY=hPSyLCEOfgkY6xPmAPf846n71EEMiNI1YHWyZjyW"
+            ],
+            "include_subdirectories": false,
+            "dependencies": [],
+            "invalidNodeError": null,
+            "ui_data": {
+              "label": "load_data.ipynb",
+              "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
+              "x_pos": 202,
+              "y_pos": 186,
+              "description": "Notebook file"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "424218e2-3f87-483a-bb9a-1f97c7f9291b",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "filename": "train_model.ipynb",
+            "runtime_image": "magdamartinez/anaconda3-boto3:latest",
+            "env_vars": [
+              "ENDPOINT_URL=http://s3-rook-ceph.apps.cluster-mlops-4f2f.mlops-4f2f.sandbox1485.opentlc.com",
+              "AWS_ACCESS_KEY_ID=DUCLUBW5EOGUTIM5UU83",
+              "AWS_SECRET_ACCESS_KEY=hPSyLCEOfgkY6xPmAPf846n71EEMiNI1YHWyZjyW"
+            ],
+            "include_subdirectories": false,
+            "invalidNodeError": null,
+            "ui_data": {
+              "label": "train_model.ipynb",
+              "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
+              "x_pos": 420,
+              "y_pos": 186,
+              "description": "Notebook file"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "e77b0d5d-6b7b-4e03-ac98-20bdc37efc76",
+                  "node_id_ref": "af1a5138-97d3-453f-85e1-dcc0ef7c3882",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "d7447128-e6ca-444c-b0b0-bb3b7e3b470d",
+          "type": "execution_node",
+          "op": "execute-notebook-node",
+          "app_data": {
+            "filename": "deploy_model.ipynb",
+            "runtime_image": "magdamartinez/anaconda3-boto3:latest",
+            "env_vars": [],
+            "include_subdirectories": false,
+            "invalidNodeError": "no runtime image",
+            "ui_data": {
+              "label": "deploy_model.ipynb",
+              "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
+              "x_pos": 646,
+              "y_pos": 186,
+              "description": "Notebook file",
+              "decorations": [
+                {
+                  "id": "error",
+                  "image": "data:image/svg+xml;utf8,%3Csvg%20focusable%3D%22false%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23d32f2f%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20aria-hidden%3D%22true%22%3E%0A%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2210%22%3E%3C%2Fcircle%3E%0A%20%20%3Ctitle%3EError%3C%2Ftitle%3E%0A%3C%2Fsvg%3E%0A",
+                  "outline": false,
+                  "position": "topLeft",
+                  "x_pos": 20,
+                  "y_pos": 3
+                }
+              ]
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "1bc06013-9997-409d-9313-ac45cf11ba79",
+                  "node_id_ref": "424218e2-3f87-483a-bb9a-1f97c7f9291b",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": []
+        },
+        "version": 3
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}
