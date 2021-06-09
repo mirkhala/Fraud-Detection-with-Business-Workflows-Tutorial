@@ -16,8 +16,8 @@ spec:
   - graph:
       children: []
       implementation: SKLEARN_SERVER
-      modelUri: s3://ccdata-1f48081f-efe6-423e-9381-301a05bafc6c/uploaded/model
+      modelUri: s3://ccdata-1f48081f-efe6-423e-9381-301a05bafc6c/uploaded/model/
       envSecretRefName: seldon-init-container-secret
-      name: modelfull
+      name: classifier
     name: default
     replicas: 1
