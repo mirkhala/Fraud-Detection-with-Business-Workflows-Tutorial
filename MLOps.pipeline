@@ -26,8 +26,8 @@
             "ui_data": {
               "label": "load_data.ipynb",
               "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
-              "x_pos": 202,
-              "y_pos": 186,
+              "x_pos": 195,
+              "y_pos": 188,
               "description": "Notebook file"
             }
           },
@@ -77,8 +77,8 @@
             "ui_data": {
               "label": "train_model.ipynb",
               "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
-              "x_pos": 420,
-              "y_pos": 186,
+              "x_pos": 436,
+              "y_pos": 188,
               "description": "Notebook file"
             }
           },
@@ -119,20 +119,20 @@
           ]
         },
         {
-          "id": "d7447128-e6ca-444c-b0b0-bb3b7e3b470d",
+          "id": "aac3b336-89fe-4825-afdd-b35a0bd112fa",
           "type": "execution_node",
           "op": "execute-notebook-node",
           "app_data": {
-            "filename": "deploy_model.ipynb",
+            "filename": "deploy_model_seldon.ipynb",
             "runtime_image": "magdamartinez/anaconda3-boto3:latest",
             "env_vars": [],
             "include_subdirectories": false,
             "invalidNodeError": null,
             "ui_data": {
-              "label": "deploy_model.ipynb",
+              "label": "deploy_model_seldon.ipynb",
               "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Cg%20class%3D%22jp-icon-warn0%20jp-icon-selectable%22%20fill%3D%22%23EF6C00%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M18.7%203.3v15.4H3.3V3.3h15.4m1.5-1.5H1.8v18.3h18.3l.1-18.3z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.5%2016.5l-5.4-4.3-5.6%204.3v-11h11z%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A",
-              "x_pos": 626,
-              "y_pos": 187,
+              "x_pos": 681,
+              "y_pos": 188,
               "description": "Notebook file"
             }
           },
@@ -150,7 +150,7 @@
               },
               "links": [
                 {
-                  "id": "1bc06013-9997-409d-9313-ac45cf11ba79",
+                  "id": "9fa50bdf-a0a9-43e4-99dd-a061efaf9e0f",
                   "node_id_ref": "424218e2-3f87-483a-bb9a-1f97c7f9291b",
                   "port_id_ref": "outPort"
                 }

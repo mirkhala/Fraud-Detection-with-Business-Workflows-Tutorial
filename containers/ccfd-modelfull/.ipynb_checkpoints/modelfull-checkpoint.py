@@ -24,12 +24,12 @@ class ModelFull(object):
             aws_secret_access_key='hPSyLCEOfgkY6xPmAPf846n71EEMiNI1YHWyZjyW', 
             endpoint_url='http://s3-rook-ceph.apps.cluster-mlops-4f2f.mlops-4f2f.sandbox1485.opentlc.com'
         )
-        key = "uploaded/modelfull.pkl"
+        key = "uploaded/modelfull.joblib"
         try:
             print("Trying to download model")
             s3.download_file(
                 Bucket='ccdata-1f48081f-efe6-423e-9381-301a05bafc6c', 
-                Key=key, Filename="/tmp/modelfull_1.pkl"
+                Key=key, Filename="/tmp/modelfull_1.joblib"
             )
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
@@ -39,7 +39,7 @@ class ModelFull(object):
 
         # Replace with path of trained model
         print("Loading model to seldon")
-        model_path = '/tmp/modelfull_1.pkl'
+        model_path = '/tmp/modelfull_1.joblib'
         self.clf = load(model_path)
         print("Model uploaded to class")
         

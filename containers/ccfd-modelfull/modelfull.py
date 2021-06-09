@@ -1,8 +1,9 @@
-import joblib
+from joblib import load
 import pandas as pd
+import botocore
+import boto3
 
-class modelfull(object):
- 
+class ModelFull(object):
     def __init__(self):
         print("Initializing")
         # Variables needed for metric collection
@@ -16,9 +17,33 @@ class modelfull(object):
         self.Amount=0
         self.proba_1 = 0
         #///////// Loading mode from filesystem
-        self.clf = joblib.load('modelfull.pkl')
+        # Create an S3 client
+        s3 = boto3.client(
+            service_name='s3',
+            aws_access_key_id='DUCLUBW5EOGUTIM5UU83',
+            aws_secret_access_key='hPSyLCEOfgkY6xPmAPf846n71EEMiNI1YHWyZjyW', 
+            endpoint_url='http://s3-rook-ceph.apps.cluster-mlops-4f2f.mlops-4f2f.sandbox1485.opentlc.com'
+        )
+        key = "uploaded/modelfull.joblib"
+        try:
+            print("Trying to download model")
+            s3.download_file(
+                Bucket='ccdata-1f48081f-efe6-423e-9381-301a05bafc6c', 
+                Key=key, Filename="/tmp/modelfull_1.joblib"
+            )
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                print("The object does not exist.")
+            else:
+                raise
+
+        # Replace with path of trained model
+        print("Loading model to seldon")
+        model_path = '/tmp/modelfull_1.joblib'
+        self.clf = load(model_path)
         print("Model uploaded to class")
- 
+        
+        
     def predict(self,x,features_names):
         print(x)
         print(type(x))
@@ -54,3 +79,8 @@ class modelfull(object):
             {"type":"GAUGE","key":"Amount","value":self.Amount},
             {"type":"GAUGE","key":"proba_1","value":self.proba_1[0]},
             ]
+
+    
+if __name__ == "__main__":
+    model_full = ModelFull()
+    print(model_full.clf)
