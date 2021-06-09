@@ -7,7 +7,6 @@ metadata:
   name: modelfull
 spec:
   annotations:
-    seldon.io/executor: "true"
     project_name: ccfd-dev
     deployment_version: '0.1'
   name: modelfull
@@ -17,8 +16,7 @@ spec:
   - graph:
       children: []
       implementation: SKLEARN_SERVER
-      modelUri: s3://uploaded/model
-      envSecretRefName: seldon-init-container-secret
-      name: classifier
+      modelUri: s3.amazonaws.com/ccdata-1f48081f-efe6-423e-9381-301a05bafc6c/uploaded/
+      name: modelfull
     name: default
     replicas: 1
