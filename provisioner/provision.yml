@@ -22,6 +22,12 @@
         state: present
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
+    - name: Deploy ODH Operator
+      k8s:
+        state: present
+        definition: "{{ lookup('file', '../deploy/odh/operator.yaml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
       k8s_auth:
