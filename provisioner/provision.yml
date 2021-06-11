@@ -28,6 +28,18 @@
         definition: "{{ lookup('file', '../deploy/odh/operator.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
+    - name: Check ODH operator
+      k8s_info:
+        api_version: apiextensions.k8s.io/v1
+        kind: customresourcedefinitions
+        name: kfdefs.kfdef.apps.kubeflow.org
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      register: odh_operator
+
+    - name: Show ODH installation info
+      debug: 
+        #msg: "{{ odh_operator.resources.metadata.name }}"
+        msg: "{{ odh_operator.resources[0].metadata.name }} created at {{ odh_operator.resources[    0].metadata.creationTimestamp }}"
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
       k8s_auth:
