@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  module_defaults:
+    group/k8s:
+      host: "{{ ocp_host }}"
+      validate_certs: no
+
+  tasks:
+    - name: Log in (obtain token)
+      k8s_auth:
+        username: "{{ ocp_user }}"
+        password: "{{ ocp_pass }}"
+      register: k8s_auth_results
+
+    - name: Create new Project (namespace)
+      k8s:
+        name: "{{ demo_name }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+    - name: If login succeeded, try to log out (revoke access token)
+      when: k8s_auth_results.k8s_auth.api_key is defined
+      k8s_auth:
+        state: absent
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
