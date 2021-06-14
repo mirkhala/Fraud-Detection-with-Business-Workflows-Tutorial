@@ -34,14 +34,31 @@
         kind: customresourcedefinitions
         name: kfdefs.kfdef.apps.kubeflow.org
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      until: odh_operator.resources | length > 0 
       register: odh_operator
 
     - name: Show ODH installation info
       debug: 
         #msg: "{{ odh_operator.resources.metadata.name }}"
-        msg: "{{ odh_operator.resources[0].metadata.name }} created at {{ odh_operator.resources[    0].metadata.creationTimestamp }}"
+        msg: "{{ odh_operator.resources[0].metadata.name }} created at {{ odh_operator.resources[0].metadata.creationTimestamp }}"
+    
+    - name: Deploy ODH - Strimzi Operator
+      k8s:
+        state: present
+        definition: "{{ lookup('file', '../deploy/odh/odh-with-strimzi.yaml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      when: strimzi == true
+    
+    - name: Deploy ODH - No Strimzi Operator
+      k8s:
+        state: present
+        definition: "{{ lookup('file', '../deploy/odh/odh-no-strimzi.yaml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      when: strimzi == false
+
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
       k8s_auth:
         state: absent
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
