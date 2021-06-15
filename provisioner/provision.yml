@@ -2,6 +2,9 @@
 - hosts: localhost
   gather_facts: no
 
+  vars:
+    ocs-ns: ocs-project
+
   module_defaults:
     group/k8s:
       host: "{{ ocp_host }}"
@@ -41,20 +44,54 @@
       debug: 
         #msg: "{{ odh_operator.resources.metadata.name }}"
         msg: "{{ odh_operator.resources[0].metadata.name }} created at {{ odh_operator.resources[0].metadata.creationTimestamp }}"
-    
+ 
+    - name: Check installed operators
+      k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: subscriptions
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      register: operator_list
+
+    - name: Check if Strimzi operator is present
+      set_fact:
+        strimzi_installed: "{{ 'strimzi' in operator_list.resources | json_query(query) }}"
+      vars:
+        query: "[].metadata.name"
+
     - name: Deploy ODH - Strimzi Operator
       k8s:
         state: present
         definition: "{{ lookup('file', '../deploy/odh/odh-with-strimzi.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
-      when: strimzi == true
+      when: strimzi_installed == false
     
     - name: Deploy ODH - No Strimzi Operator
       k8s:
         state: present
         definition: "{{ lookup('file', '../deploy/odh/odh-no-strimzi.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
-      when: strimzi == false
+      when: strimzi_installed == true
+
+    - name: OCS - Create namespace
+      k8s:
+        name: "{{ ocs_ns }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+    - name: OCS - Create OperatorGroup
+      k8s:
+        state: present
+        definition: "{{ lookup('file', 'ocs-operator-group.yml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+    - name: OCS - Create subscription
+      k8s:
+        state: present
+        definition: "{{ lookup('file', 'ocs-subscription.yml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      register: csv
 
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
