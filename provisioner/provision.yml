@@ -3,7 +3,7 @@
   gather_facts: no
 
   vars:
-    ocs-ns: ocs-project
+    ocs_ns: ocs-project
 
   module_defaults:
     group/k8s:
@@ -28,6 +28,7 @@
     - name: Deploy ODH Operator
       k8s:
         state: present
+        namespace: "{{ demo_name }}"
         definition: "{{ lookup('file', '../deploy/odh/operator.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
@@ -72,26 +73,53 @@
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       when: strimzi_installed == true
 
-    - name: OCS - Create namespace
+    - name: Validate seldon pod is ready
+      # pod like: modelfull-modelfull-0-modelfull-8475984bf5-tdjdw
+      pause:
+        minutes: 5
+
+    - name: Create Bucket in OCS
       k8s:
-        name: "{{ ocs_ns }}"
-        api_version: v1
-        kind: Namespace
         state: present
+        namespace: "{{ demo_name }}"
+        definition: "{{ lookup('file', '../deploy/storage/obc-ocs.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
-    - name: OCS - Create OperatorGroup
+    - name: Deploy the Fraud Detection model with Seldon
       k8s:
         state: present
-        definition: "{{ lookup('file', 'ocs-operator-group.yml') | from_yaml }}"
+        namespace: "{{ demo_name }}"
+        definition: "{{ lookup('file', '../deploy/model/modelfull.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
-    - name: OCS - Create subscription
+# TODO: better checking Fraud model is created
+#    - name: Check model is created
+#      pause:
+#        minutes: 3
+#
+#    - name: 
+
+    - name: Expose Route for seldon model
       k8s:
         state: present
-        definition: "{{ lookup('file', 'ocs-subscription.yml') | from_yaml }}"
+        namespace: "{{ demo_name }}"
+        definition: "{{ lookup('file', '../deploy/model/modelfull-route.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
-      register: csv
+      register: modelfull_route
+
+    - name: Validate seldon pod is ready
+      # pod like: modelfull-modelfull-0-modelfull-8475984bf5-tdjdw
+      pause:
+        seconds: 90
+
+    - name: Simulate a transaction
+      uri:
+        url: "http://{{ modelfull_route.result.spec.host }}/api/v1.0/predictions"
+        method: POST
+        body_format: json
+        body: 
+          strData: "0.365194527642578,0.819750231339882,-0.5927999453145171,-0.619484351930421,-2.84752569239798,1.48432160780265,0.499518887687186,72.98" 
+      register: simul_transaction
 
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
