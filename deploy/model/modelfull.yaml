@@ -7,7 +7,7 @@ metadata:
   name: modelfull
 spec:
   annotations:
-    project_name: ccfd-dev
+    project_name: ccfd
     deployment_version: '0.1'
   name: modelfull
   oauth_key: oauth-key
