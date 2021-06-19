@@ -1,0 +1,33 @@
+---
+- name: Tasks to check Machine Status
+  block:
+    - name: Check status of created OCS Machines
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: machine.openshift.io/v1beta1
+        kind: Machine
+        label_selectors:
+          - machine.openshift.io/cluster-api-machine-type = workerocs
+      register: machines
+
+    - name: Store machines status
+      set_fact:
+        machines_status_list: "{{ machines.resources |json_query(query) | unique }}"
+      vars:
+        query: "[].status.phase"
+
+    - name: Check if ready
+      fail: 
+        msg: not ready
+      when: ((machines_status_list | length == 1) and ('Running' in machines_status_list) ) == False
+  rescue:
+    - debug:
+        msg: 
+          - "length = {{ machines.resources |json_query(query) |unique|length }}"
+          - "machines_status_list = {{ machines_status_list }}"
+          - "{{(machines_status_list | length ==1) and ('Running' in machines_status_list)}} "
+      vars:
+        query: "[].status.phase"
+
+    - include_tasks: ocp_check_machines.yml
+        
