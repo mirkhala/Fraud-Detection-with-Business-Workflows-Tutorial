@@ -1,0 +1,42 @@
+---
+- name: Tasks to check Fraud model creation
+  block:
+    - name: Wait between tests
+      pause:
+        seconds: 10 
+
+    - name: Check status of pods in ccfd namespace
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: v1
+        kind: Pod
+        namespace: "{{ demo_name }}"
+      register: pod_list 
+
+    - name: Store pods status
+      set_fact:
+        pod_status: "{{ pod_list.resources |json_query(query) | unique }}"
+      vars:
+        query: "[?status.phase!='Succeeded'].status.phase"
+
+    - name: Validate pods status
+      set_fact:
+        pods_status: "{{ running_in_list and all_same_in_list }}"
+      vars:
+        query: "resources[?status.phase!='Succeeded'].status.phase"
+        pods_status_list: "{{ pod_list | json_query(query) }}"
+        running_in_list: "{{ 'Running' in pods_status_list }}"
+        all_same_in_list: "{{ pods_status_list | unique | length == 1 }}"
+
+    - name: Show validation result
+      debug:
+        var: pods_status
+
+    - name: Check if ready
+      fail: 
+        msg: not ready yet
+      when: pods_status == False 
+
+  rescue:
+    - include_tasks: check_seldon_pods.yml
+
