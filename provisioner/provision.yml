@@ -74,9 +74,50 @@
       when: strimzi_installed == true
 
     - name: Validate seldon pod is ready
-      # pod like: modelfull-modelfull-0-modelfull-8475984bf5-tdjdw
-      pause:
-        minutes: 5
+      include_tasks: check_seldon_pods.yml
+
+    - name: OCS - Get machineset info
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: machine.openshift.io/v1beta1
+        kind: MachineSet
+        namespace: openshift-machine-api
+      register: machineset_info
+
+    - name: set cluster id, image id from machineset info
+      set_fact:
+        cluster_id: "{{ machineset_info.resources[0].metadata.labels['machine.openshift.io/cluster-api-cluster'] }}"
+        image_id: "{{ machineset_info.resources[0].spec.template.spec.providerSpec.value.ami.id }}"
+
+    - name: OCS - Create a Machineset for OCS deployment
+      k8s:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        state: present
+        definition: "{{ lookup('template', 'templates/ocslab_cluster-workerocs.yaml.j2') }}"
+
+    - name: OCS - check machines
+      include_tasks: check_ocp_machines.yml
+
+    - name: OCS - Create namespace
+      k8s:
+        name: "{{ ocs_ns }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+    - name: OCS - Create OperatorGroup
+      k8s:
+        state: present
+        definition: "{{ lookup('file', 'ocs-operator-group.yml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+    - name: OCS - Create subscription
+      k8s:
+        state: present
+        definition: "{{ lookup('file', 'ocs-subscription.yml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      register: csv
 
     - name: Create Bucket in OCS
       k8s:
@@ -92,12 +133,8 @@
         definition: "{{ lookup('file', '../deploy/model/modelfull.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
-# TODO: better checking Fraud model is created
-#    - name: Check model is created
-#      pause:
-#        minutes: 3
-#
-#    - name: 
+    - name: Check model is created
+      include_tasks: check_fraud_model.yml
 
     - name: Expose Route for seldon model
       k8s:
@@ -108,9 +145,7 @@
       register: modelfull_route
 
     - name: Validate seldon pod is ready
-      # pod like: modelfull-modelfull-0-modelfull-8475984bf5-tdjdw
-      pause:
-        seconds: 90
+      include_tasks: check_modelfull_pod.yml
 
     - name: Simulate a transaction
       uri:
