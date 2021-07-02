@@ -29,5 +29,5 @@
       vars:
         query: "[].status.phase"
 
-    - include_tasks: ocp_check_machines.yml
+    - include_tasks: check_ocp_machines.yml
         
