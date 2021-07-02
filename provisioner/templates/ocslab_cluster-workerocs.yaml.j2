@@ -16,7 +16,6 @@ spec:
       machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2a
   template:
     metadata:
-      creationTimestamp: null
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
@@ -24,10 +23,10 @@ spec:
         machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2a
     spec:
       metadata:
-        creationTimestamp: null
         labels:
           role: storage-node
           node-role.kubernetes.io/worker: ""
+          cluster.ocs.openshift.io/openshift-storage: ""
       providerSpec:
         value:
           ami:
@@ -86,7 +85,6 @@ spec:
       machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2b
   template:
     metadata:
-      creationTimestamp: null
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
@@ -94,10 +92,10 @@ spec:
         machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2b
     spec:
       metadata:
-        creationTimestamp: null
         labels:
           role: storage-node
           node-role.kubernetes.io/worker: ""
+          cluster.ocs.openshift.io/openshift-storage: ""
       providerSpec:
         value:
           ami:
@@ -156,7 +154,6 @@ spec:
       machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2c
   template:
     metadata:
-      creationTimestamp: null
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
@@ -164,10 +161,10 @@ spec:
         machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2c
     spec:
       metadata:
-        creationTimestamp: null
         labels:
           role: storage-node
           node-role.kubernetes.io/worker: ""
+          cluster.ocs.openshift.io/openshift-storage: ""
       providerSpec:
         value:
           ami:
