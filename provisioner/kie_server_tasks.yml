@@ -1,0 +1,17 @@
+---
+- name: Seldon model for the prediction service
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    definition:
+      api_version: image.openshift.io/v1
+      kind: ImageStreamImport
+      metadata:
+        name: newapp
+        namespace: default
+      spec:
+        import: false
+        images:
+          - from:
+              kind: DockerImage
+              name: quay.io/odh-workshops/ccfd-business-workflow-tutorial-ccfd-seldon-usertask-model:1.1-CCFD
