@@ -77,6 +77,6 @@
     s3_url: "https://{{ host_external_access }}"
     bucket: "{{ bucket_name }}"
     src: "{{ csv_datafile }}"
-    object: "/OPEN/uploaded/{{ csv_datafile }}" 
+    object: "/OPEN/uploaded/{{ csv_datafile.split('/')[2] }}" 
     mode: put
     permission: public-read-write
