@@ -163,6 +163,7 @@
 
     - name: Create Secret to store keys
       k8s:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
         state: present
         definition:
           apiVersion: v1
@@ -174,10 +175,14 @@
             accessKey: "{{ bucket_access_key }}"
             secretkey: "{{ bucket_secret_key }}"
 
-    - name: Get CSV Data
+    - name: Set CSV filename/path
       set_fact:
-        csv_datafile:
-          dest: /tmp/data_creditcard.csv
+        csv_datafile: /tmp/data_creditcard.csv
+        
+    - name: Get CSV Data
+      get_url:
+        url: "{{ csv_url }}"
+        dest: "{{ csv_datafile }}" 
 
     - name: Upload CSV to Bucket
       aws_s3:
@@ -185,6 +190,6 @@
         aws_secret_key: "{{ bucket_secret_key }}"
         s3_url: "https://{{ host_external_access }}"
         bucket: "{{ bucket_name }}"
-        src: "{{ csv_datafile.dest }}"
+        src: "{{ csv_datafile }}"
         object: "{{ csv_datafile.dest.split('/')[2] }}"
         mode: put
