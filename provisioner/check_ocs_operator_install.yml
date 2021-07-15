@@ -1,0 +1,40 @@
+---
+- name: Tasks to check Subscription
+  block:
+    - name: Check status of created OCS Subscription
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: operators.coreos.com/v1alpha1 
+        kind: Subscription
+        namespace: openshift-storage
+      register: subs
+
+    - name: Store Subscription status
+      set_fact:
+        subs_status: "{{ subs.resources |json_query(query) }}"
+      vars:
+        query: "[].status.state"
+
+    - name: Check if Subscription is ready
+      fail: 
+        msg: not ready
+      when: ((subs_status | length == 1) and ('AtLatestKnown' in subs_status) ) == False
+
+    - name: Pause some time for precaution if successful
+      pause: 
+        seconds: 30
+
+  rescue:
+    - debug:
+        msg: 
+          - "subs_status = {{ subs_status }}"
+          - "{{(subs_status | length ==1) and ('True' in subs_status)}} "
+      vars:
+        query: "[].status.phase"
+
+    - name: Wait a few seconds before retrying
+      pause:
+        seconds: 15
+
+    - include_tasks: check_ocs_operator_install.yml 
+        
