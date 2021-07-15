@@ -1,0 +1,36 @@
+---
+- name: Tasks to check StorageCluster
+  block:
+    - name: Check status of created OCS StorageCluster
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: ocs.openshift.io/v1
+        kind: StorageCluster
+        namespace: openshift-storage
+      register: nodes
+
+    - name: Store StorageCluster status
+      set_fact:
+        nodes_status_list: "{{ nodes.resources |json_query(query) | unique }}"
+      vars:
+        query: "[].status.conditions[?type=='Available'].status[]"
+
+    - name: Check if StorageCluster is ready
+      fail: 
+        msg: not ready
+      when: ((nodes_status_list | length == 1) and ('True' in nodes_status_list) ) == False
+  rescue:
+    - debug:
+        msg: 
+          - "length = {{ nodes.resources |json_query(query) |unique|length }}"
+          - "nodes_status_list = {{ nodes_status_list }}"
+          - "{{(nodes_status_list | length ==1) and ('True' in nodes_status_list)}} "
+      vars:
+        query: "[].status.phase"
+
+    - name: Wait a few seconds before retrying
+      pause:
+        seconds: 15
+
+    - include_tasks: check_ocs_storagecluster.yml  
+        
