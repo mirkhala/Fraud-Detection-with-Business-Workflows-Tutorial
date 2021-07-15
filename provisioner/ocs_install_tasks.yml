@@ -52,7 +52,6 @@
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
   register: storage_cluster
 
-- name: OCS - Wait for pods to be Running
-  # Improve this: check condition of pods
-  pause:
-    seconds: 5 
+- name: OCS - Check StorageCluster 
+  include_tasks: ocs_install_tasks.yml
+
