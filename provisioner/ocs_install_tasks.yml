@@ -53,5 +53,5 @@
   register: storage_cluster
 
 - name: OCS - Check StorageCluster 
-  include_tasks: ocs_install_tasks.yml
+  include_tasks: check_ocs_storagecluster.yml 
 
