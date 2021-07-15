@@ -45,6 +45,9 @@
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
   register: csv
 
+- name: OCS - Check OCS Operator install status
+  include_tasks: check_ocs_operator_install.yml
+
 - name: OCS - Create StorageCluster
   k8s:
     state: present
