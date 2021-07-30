@@ -104,6 +104,10 @@
     - name: Validate seldon pod is ready
       include_tasks: check_modelfull_pod.yml
 
+    - name: Wait for service availability
+      pause:
+        seconds: 30
+
     - name: Simulate a transaction
       uri:
         url: "http://{{ modelfull_route.result.spec.host }}/api/v1.0/predictions"
