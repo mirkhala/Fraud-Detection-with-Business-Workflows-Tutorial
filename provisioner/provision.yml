@@ -120,3 +120,6 @@
     - name: Upload data to OCS/ODF tasks
       include_tasks: upload_data_tasks.yml
 
+    - name: KIE Server tasks
+      include_tasks: kie_server_tasks.yml
+      
