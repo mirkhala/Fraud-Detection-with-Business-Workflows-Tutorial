@@ -1,0 +1,27 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: null
+  labels:
+    app: {{ imagestream_name }}
+    app.kubernetes.io/component: {{ imagestream_name }}
+    app.kubernetes.io/instance: {{ imagestream_name }}
+  name: {{ imagestream_name }}
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - annotations:
+        openshift.io/imported-from: {{ kie_app_name }}
+      from:
+        kind: DockerImage
+        name: {{ kie_app_name }}
+      generation: null
+      importPolicy: {}
+      name: {{ name }}
+      referencePolicy:
+        type: ''
+status:
+  dockerImageRepository: ''

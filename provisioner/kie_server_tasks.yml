@@ -1,17 +1,59 @@
 ---
-- name: Seldon model for the prediction service
+- name: Seldon model for the prediction service - create ImageStreamImports
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
-    definition:
-      api_version: image.openshift.io/v1
+    namespace: default
+    definition: 
       kind: ImageStreamImport
+      apiVersion: image.openshift.io/v1
       metadata:
         name: newapp
-        namespace: default
       spec:
         import: false
         images:
           - from:
               kind: DockerImage
-              name: quay.io/odh-workshops/ccfd-business-workflow-tutorial-ccfd-seldon-usertask-model:1.1-CCFD
+              name: "{{ kie_app_name }}" 
+  register: imagestreamimports
+
+- name: set proper name
+  set_fact: 
+    imagestream_name: "{{ kie_app_name.split('/')[-1].split(':')[0] }}" 
+
+- name: Seldon model for the prediction service - Create ImageStream
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', 'templates/kie_imagestream.yaml.j2') }}"
+  vars:
+    name: "{{ kie_app_name.split('/')[-1] }}" 
+  register: imagestream
+
+- name: Seldon model for the prediction service - Get ImageStreamTags
+  k8s_info:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    api_version: image.openshift.io/v1
+    namespace: default
+    kind: ImageStreamTag
+    name: "{{ name }}"
+  vars:
+    name: "{{ kie_app_name.split('/')[-1] }}" 
+  register: imagestreamtags
+
+- name: Seldon model for the prediction service - Create Deployment
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', 'templates/kie_deployment.yaml.j2') }}"
+  register: kie_deployment
+
+- name: Seldon model for the prediction service - Create Service
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', 'templates/kie_service.yaml.j2') }}"
+  register: kie_deployment

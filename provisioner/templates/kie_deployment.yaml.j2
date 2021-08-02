@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ kie_app_name }}","fieldPath":"spec.template.spec.containers[?(@.name==\"{{ imagestream_name }}\")].image"}]'
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: null
+  labels:
+    app: {{ imagestream_name }}
+    app.kubernetes.io/component: {{ imagestream_name }}
+    app.kubernetes.io/instance: {{ imagestream_name }}
+  name: {{ imagestream_name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: {{ imagestream_name }}
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        deployment: {{ imagestream_name }}
+    spec:
+      containers:
+        - image: ' '
+          name: {{ imagestream_name }}
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          resources: {}
+status: {}
+
