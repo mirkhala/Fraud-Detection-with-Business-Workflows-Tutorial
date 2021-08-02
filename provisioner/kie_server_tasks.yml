@@ -57,3 +57,27 @@
     namespace: default
     definition: "{{ lookup('template', 'templates/kie_service.yaml.j2') }}"
   register: kie_deployment
+
+# es esto opcional??? o es uno en vez del otro???
+# - name: Execution server
+#   k8s:
+#     state: present
+#     namespace: "{{ demo_name }}"
+#     definition: "{{ lookup('file', '../deploy/ccd-service.yaml') | from_yaml }}"
+#     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+#   register: kie_exec_server
+
+- name: Notification service
+  k8s:
+    state: present
+    namespace: "{{ demo_name }}"
+    definition: "{{ lookup('file', '../deploy/notification-service.yaml') | from_yaml_all |list}}"
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
+- name: Camel Router
+  k8s:
+    state: present
+    namespace: "{{ demo_name }}"
+    src: ../deploy/router.yaml
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+
