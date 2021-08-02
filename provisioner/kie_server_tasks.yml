@@ -94,3 +94,15 @@
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
     definition: "{{ oc_process.stdout | from_yaml }}"
+
+- name: Grafana - Kie Server Service Monitor
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    definition: "{{ lookup('file', '../deploy/servicemonitors/ccdserviceservicemonitor.yaml') | from_yaml }}"
+
+- name: Grafana - Camel Router Service Monitor
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    definition: "{{ lookup('file', '../deploy/servicemonitors/ccdserviceservicemonitor.yaml') | from_yaml }}"
