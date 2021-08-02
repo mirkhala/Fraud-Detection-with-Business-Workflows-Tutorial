@@ -81,3 +81,16 @@
     src: ../deploy/router.yaml
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
+- name: Set Facts
+  set_fact:
+    filename: "OPEN/uploaded/creditcard.csv"
+
+- name: Process Template
+  command: "oc process -o yaml -f ../deploy/kafka/producer-deployment.yaml -p NAMESPACE={{ demo_name }} -p S3BUCKET={{ s3_bucket }} -p FILENAME={{ filename }}  -p S3ENDPOINT={{ s3_endpoint }}"
+  register: oc_process
+
+- name: Kafka Producer
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    definition: "{{ oc_process.stdout | from_yaml }}"
