@@ -90,7 +90,7 @@
     s3_bucket: "{{ bucket_name }}" 
 
 - name: Process Template
-  command: "oc process -o yaml -f ../deploy/kafka/producer-deployment.yaml -p NAMESPACE={{ demo_name }} -p S3BUCKET={{ s3_bucket }} -p FILENAME={{ filename }}  -p S3ENDPOINT={{ s3_endpoint }}"
+  shell: "oc login {{ ocp_host }} -u {{ ocp_user }} -p {{ ocp_pass }} --insecure-skip-tls-verify=true >/dev/null 2>&1 ; oc process -o yaml -f ../deploy/kafka/producer-deployment.yaml -p NAMESPACE={{ demo_name }} -p S3BUCKET={{ s3_bucket }} -p FILENAME={{ filename }}  -p S3ENDPOINT={{ s3_endpoint }}"
   register: oc_process
 
 - name: Kafka Producer
