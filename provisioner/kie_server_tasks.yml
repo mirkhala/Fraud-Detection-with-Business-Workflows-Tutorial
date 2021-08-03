@@ -82,8 +82,12 @@
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
 
 - name: Set Facts
+  # s3_bucket from upload_data_tasks.yml --> todo: change name 
+  # host_external_access from upload_data_tasks.yml
   set_fact:
     filename: "OPEN/uploaded/creditcard.csv"
+    s3_endpoint: "http://{{ route_list.resources[0].spec.host }}"
+    s3_bucket: "{{ bucket_name }}" 
 
 - name: Process Template
   command: "oc process -o yaml -f ../deploy/kafka/producer-deployment.yaml -p NAMESPACE={{ demo_name }} -p S3BUCKET={{ s3_bucket }} -p FILENAME={{ filename }}  -p S3ENDPOINT={{ s3_endpoint }}"
@@ -130,4 +134,3 @@
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
     definition: "{{ lookup('file', '../deploy/grafana/router-dashboard.yaml') | from_yaml }}"
-    
