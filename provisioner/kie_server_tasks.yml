@@ -97,40 +97,47 @@
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ oc_process.stdout | from_yaml }}"
 
 - name: Grafana - Kie Server Service Monitor
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/servicemonitors/ccdserviceservicemonitor.yaml') | from_yaml }}"
 
 - name: Grafana - Camel Router Service Monitor
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/servicemonitors/ccdserviceservicemonitor.yaml') | from_yaml }}"
 
 - name: Grafana - Seldon Core
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/grafana/seldon-core-dashboard.yaml') | from_yaml }}"
 
 - name: Grafana - Model Prediction
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/grafana/seldon-model-prediction.yaml') | from_yaml }}"
 
 - name: Grafana - Kie Server
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/grafana/kie-dashboard.yaml') | from_yaml }}"
 
 - name: Grafana - Camel Router
   k8s:
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
     state: present
+    namespace: "{{ demo_name }}"
     definition: "{{ lookup('file', '../deploy/grafana/router-dashboard.yaml') | from_yaml }}"
