@@ -13,6 +13,8 @@
         username: "{{ ocp_user }}"
         password: "{{ ocp_pass }}"
       register: k8s_auth_results
+      tags: 
+        - always
 
     - name: Create new Project (namespace)
       k8s:
@@ -21,6 +23,7 @@
         kind: Namespace
         state: present
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: odh
 
     - name: Deploy ODH Operator
       k8s:
@@ -28,6 +31,7 @@
         namespace: "{{ demo_name }}"
         definition: "{{ lookup('file', '../deploy/odh/operator.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: odh
 
     - name: Check ODH operator
       k8s_info:
@@ -37,11 +41,13 @@
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       until: odh_operator.resources | length > 0 
       register: odh_operator
+      tags: odh
 
     - name: Show ODH installation info
       debug: 
         #msg: "{{ odh_operator.resources.metadata.name }}"
         msg: "{{ odh_operator.resources[0].metadata.name }} created at {{ odh_operator.resources[0].metadata.creationTimestamp }}"
+      tags: odh
  
     - name: Check installed operators
       k8s_info:
@@ -49,12 +55,14 @@
         kind: subscriptions
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       register: operator_list
+      tags: odh
 
     - name: Check if Strimzi operator is present
       set_fact:
         strimzi_installed: "{{ 'strimzi' in operator_list.resources | json_query(query) }}"
       vars:
         query: "[].metadata.name"
+      tags: odh 
 
     - name: Deploy ODH - Strimzi Operator
       k8s:
@@ -62,6 +70,7 @@
         definition: "{{ lookup('file', '../deploy/odh/odh-with-strimzi.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       when: strimzi_installed == false
+      tags: odh 
     
     - name: Deploy ODH - No Strimzi Operator
       k8s:
@@ -69,12 +78,15 @@
         definition: "{{ lookup('file', '../deploy/odh/odh-no-strimzi.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       when: strimzi_installed == true
+      tags: odh 
 
     - name: Validate seldon pod is ready
       include_tasks: check_seldon_pods.yml
+      tags: odh 
 
     - name: OCS Tasks
       include_tasks: ocs_install_tasks.yml
+      tags: ocs_install
 
     - name: Create Bucket in OCS
       k8s:
@@ -82,6 +94,7 @@
         namespace: "{{ demo_name }}"
         definition: "{{ lookup('file', '../deploy/storage/obc-ocs.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: ocs_upload_data
 
     - name: Deploy the Fraud Detection model with Seldon
       k8s:
@@ -89,9 +102,11 @@
         namespace: "{{ demo_name }}"
         definition: "{{ lookup('file', '../deploy/model/modelfull.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: fraud_model
 
     - name: Check model is created
       include_tasks: check_fraud_model.yml
+      tags: fraud_model
 
     - name: Expose Route for seldon model
       k8s:
@@ -100,13 +115,16 @@
         definition: "{{ lookup('file', '../deploy/model/modelfull-route.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       register: modelfull_route
+      tags: fraud_model
 
     - name: Validate seldon pod is ready
       include_tasks: check_modelfull_pod.yml
+      tags: fraud_model
 
     - name: Wait for service availability
       pause:
         seconds: 30
+      tags: fraud_model
 
     - name: Simulate a transaction
       uri:
@@ -116,9 +134,11 @@
         body: 
           strData: "0.365194527642578,0.819750231339882,-0.5927999453145171,-0.619484351930421,-2.84752569239798,1.48432160780265,0.499518887687186,72.98" 
       register: simul_transaction
+      tags: fraud_model
 
     - name: Upload data to OCS/ODF tasks
       include_tasks: upload_data_tasks.yml
+      tags: ocs_upload_data
 
     - name: KIE Server tasks
       include_tasks: kie_server_tasks.yml
@@ -128,3 +148,4 @@
       k8s_auth:
         state: absent
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: always

@@ -62,8 +62,8 @@
         namespace: "{{ demo_name }}"
         name: keysecret
       data:
-        accessKey: "{{ bucket_access_key }}"
-        secretkey: "{{ bucket_secret_key }}"
+        accesskey: "{{ bucket_access_key | b64encode }}"
+        secretkey: "{{ bucket_secret_key | b64encode }}"
 
 - name: Set CSV filename/path
   set_fact:
@@ -81,6 +81,6 @@
     s3_url: "https://{{ host_external_access }}"
     bucket: "{{ bucket_name }}"
     src: "{{ csv_datafile }}"
-    object: "/OPEN/uploaded/{{ csv_datafile.split('/')[2] }}" 
+    object: "/OPEN/uploaded/creditcard.csv" 
     mode: put
     permission: public-read-write
