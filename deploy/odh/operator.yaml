@@ -4,9 +4,9 @@ metadata:
   name: opendatahub-operator
   namespace: openshift-operators
 spec:
-  channel: beta
+  channel: stable
   installPlanApproval: Automatic
   name: opendatahub-operator
   source: community-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: opendatahub-operator.v0.9.0
+  startingCSV: opendatahub-operator.v1.1.0
