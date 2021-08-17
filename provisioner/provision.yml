@@ -87,6 +87,10 @@
     - name: OCS Tasks
       include_tasks: ocs_install_tasks.yml
       tags: ocs_install
+      args:
+        apply:
+          tags:
+            - ocs_install
 
     - name: Create Bucket in OCS
       k8s:
