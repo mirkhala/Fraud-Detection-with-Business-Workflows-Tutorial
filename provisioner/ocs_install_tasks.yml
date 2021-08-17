@@ -58,3 +58,9 @@
 - name: OCS - Check StorageCluster 
   include_tasks: check_ocs_storagecluster.yml 
 
+- name: OCS - Deploy Object Store
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/ocs-object.yml.j2') | from_yaml }}"
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+  register: storage_cluster
