@@ -145,7 +145,8 @@
     - name: Upload data to OCS/ODF tasks
       include_tasks: 
         file: upload_data_tasks.yml
-        apply: ocs_upload_data
+        apply: 
+          tags: ocs_upload_data
       tags: ocs_upload_data
 
     - name: KIE Server tasks
