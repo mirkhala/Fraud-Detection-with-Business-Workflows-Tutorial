@@ -92,15 +92,17 @@
         file: ocs_install_tasks.yml
         apply: 
           tags: ocs_install
-      tags: ocs_install
+      tags: always
 
-    - name: Create Bucket in OCS
+    - name: Create Bucket in OCS through Object Bucket Claim
       k8s:
         state: present
         namespace: "{{ demo_name }}"
         definition: "{{ lookup('file', '../deploy/storage/obc-ocs.yaml') | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
-      tags: ocs_upload_data
+      tags: 
+        - ocs_upload_data
+        - create_bucket
 
     - name: Deploy the Fraud Detection model with Seldon
       k8s:
@@ -111,7 +113,10 @@
       tags: fraud_model
 
     - name: Check model is created
-      include_tasks: check_fraud_model.yml
+      include_tasks: 
+        file: check_fraud_model.yml
+        apply:
+          tags: fraud_model
       tags: fraud_model
 
     - name: Expose Route for seldon model
@@ -124,7 +129,10 @@
       tags: fraud_model
 
     - name: Validate seldon pod is ready
-      include_tasks: check_modelfull_pod.yml
+      include_tasks: 
+        file: check_modelfull_pod.yml
+        apply:
+          tags: fraud_model
       tags: fraud_model
 
     - name: Wait for service availability
@@ -150,8 +158,11 @@
       tags: ocs_upload_data
 
     - name: KIE Server tasks
-      include_tasks: kie_server_tasks.yml
-      tags: always
+      include_tasks:
+        file: kie_server_tasks.yml
+        apply: 
+          tags: kie 
+      tags: kie
     
     - name: If login succeeded, try to log out (revoke access token)
       when: k8s_auth_results.k8s_auth.api_key is defined
