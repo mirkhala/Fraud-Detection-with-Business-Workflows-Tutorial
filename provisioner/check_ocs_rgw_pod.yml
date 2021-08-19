@@ -1,0 +1,39 @@
+---
+- name: Tasks to check RGW pod creation status
+  block:
+    - name: Wait between tests
+      pause:
+        seconds: 5 
+
+    - name: Check status of rgw pod in openshift-storage ns
+      k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        api_version: v1
+        kind: Pod
+        namespace: "{{ ocs_ns }}"
+        label_selectors:
+          - app = rook-ceph-rgw
+      register: pod_list 
+
+    - name: Store pod status
+      set_fact:
+        pod_status: "{{ pod_list.resources |json_query(query) | unique }}"
+      vars:
+        query: "[].status.conditions[?type=='Ready' && status=='True'][]"
+
+    - name: Validate pod status
+      set_fact:
+        pods_status: "{{ pod_status |length  > 0 }}"
+
+    - name: Show validation result
+      debug:
+        var: pods_status
+
+    - name: Check if ready
+      fail: 
+        msg: not ready yet
+      when: pods_status == False 
+
+  rescue:
+    - include_tasks: check_ocs_rgw_pod.yml
+
