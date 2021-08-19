@@ -63,4 +63,67 @@
     state: present
     definition: "{{ lookup('template', 'templates/ocs-object.yml.j2') | from_yaml }}"
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
-  register: storage_cluster
+  register: object_store
+  tags: object_store
+    
+- name: OCS - Wait for Object store creation
+  include_tasks: 
+    file: check_ocs_rgw_pod.yml
+    apply: 
+      tags: check_rgw
+  tags: check_rgw
+
+- name: OCS - Expose Route for Object Store
+  k8s:
+    kind: Route
+    api_version: route.openshift.io/v1
+    state: present
+    namespace: "{{ ocs_ns }}"
+    definition:
+      kind: Route
+      apiVersion: route.openshift.io/v1
+      metadata:
+        name: s3-rgw
+        namespace: "{{ ocs_ns }}"
+        labels:
+          app: rook-ceph-rgw
+          ceph_daemon_id: ocs-storagecluster-cephobjectstore
+          ceph_daemon_type: rgw
+          rgw: ocs-storagecluster-cephobjectstore
+          rook_cluster: openshift-storage
+          rook_object_store: ocs-storagecluster-cephobjectstore
+      spec:
+        to:
+          kind: Service
+          name: rook-ceph-rgw-ocs-storagecluster-cephobjectstore
+        port:
+          targetPort: http
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Allow
+        wildcardPolicy: None
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+  register: object_store_route
+  tags: object_store
+
+- name: OCS - Create the StorageClass to create OBCs against this RGW
+  k8s:
+    state: present
+    namespace: "{{ ocs_ns }}"
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    definition:
+      kind: StorageClass
+      apiVersion: storage.k8s.io/v1
+      metadata:
+        name: ocs-storagecluster-ceph-rgw
+        annotations:
+          description: Provides Object Bucket Claims (OBCs) using the RGW
+      provisioner: openshift-storage.ceph.rook.io/bucket
+      parameters:
+        objectStoreName: ocs-storagecluster-cephobjectstore
+        objectStoreNamespace: openshift-storage
+        region: us-east-1
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+  tags: object_store
+
