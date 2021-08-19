@@ -1,5 +1,7 @@
 ---
 - name: Tasks to check Machine Status
+  tags: ocs_install
+
   block:
     - name: Check status of created OCS Machines
       k8s_info:
