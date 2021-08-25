@@ -77,7 +77,7 @@
           termination: edge
           insecureEdgeTerminationPolicy: Allow
         wildcardPolicy: None
-    register: object_store_route
+  register: object_store_route
 
 - name: Download Storage Class definition file
   get_url:
