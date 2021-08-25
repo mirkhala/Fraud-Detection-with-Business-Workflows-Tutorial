@@ -1,0 +1,93 @@
+---
+- name: Download namespace, CRDs, Accounts and Security file
+  get_url:
+    url: https://github.com/rook/rook/raw/a123405d6796435800f21f098dfceff8526e2339/cluster/examples/kubernetes/ceph/common.yaml
+    dest: /tmp/common.yaml
+    mode: '0664'
+
+- name: Create namespace, CRDs, Accounts and Security items
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    src: /tmp/common.yaml
+
+- name: Download Operator file
+  get_url:
+    url: https://github.com/rook/rook/raw/a123405d6796435800f21f098dfceff8526e2339/cluster/examples/kubernetes/ceph/operator-openshift.yaml
+    dest: /tmp/operator-openshift.yaml
+    mode: '0664'
+
+- name: Deploy the operator
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    src: /tmp/operator-openshift.yaml
+
+- name: Download rook-ceph cluster deploy file
+  get_url:
+    url: https://github.com/rook/rook/raw/a123405d6796435800f21f098dfceff8526e2339/cluster/examples/kubernetes/ceph/cluster-on-pvc.yaml
+    dest: /tmp/cluster-on-pvc.yaml
+    mode: '0664'
+
+- name: Deploy the rook-ceph cluster on AWS (including RHPDS or OpenTLC envs)
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    src: /tmp/cluster-on-pvc.yaml
+
+- name: Check Pods Status
+  include_tasks: check_rookceph_pods.yml
+
+- name: Download Object Store definition file
+  get_url:
+    url: https://github.com/rook/rook/raw/a123405d6796435800f21f098dfceff8526e2339/cluster/examples/kubernetes/ceph/object.yaml
+    dest: /tmp/object.yaml
+    mode: '0664'
+
+- name: Deploy the Object Store
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    src: /tmp/object.yaml
+    
+- name: Check Rados GW pod status
+  include_tasks: check_ocs_rgw_pod.yml
+
+- name: Create the route
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    kind: Route
+    api_version: route.openshift.io/v1
+    state: present
+    namespace: "{{ ocs_ns }}"
+    definition:
+      kind: Route
+      apiVersion: route.openshift.io/v1
+      metadata:
+        name: "{{ s3_name }}"
+        namespace: "{{ ocs_ns }}"
+      spec:
+        to:
+          kind: Service
+          name: rook-ceph-rgw-my-store
+        port:
+          targetPort: http
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Allow
+        wildcardPolicy: None
+    register: object_store_route
+
+- name: Download Storage Class definition file
+  get_url:
+    url: https://github.com/rook/rook/raw/a123405d6796435800f21f098dfceff8526e2339/cluster/examples/kubernetes/ceph/storageclass-bucket-delete.yaml
+    dest: /tmp/storageclass-bucket-delete.yaml
+    mode: '0664'
+
+- name: Create the Storage Class
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    src: /tmp/storageclass-bucket-delete.yaml
+  register: storage_class
