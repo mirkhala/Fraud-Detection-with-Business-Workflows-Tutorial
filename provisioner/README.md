@@ -14,3 +14,8 @@ where `extra_vars.yml` contains the following variables:
 - ocp_host: API URL of the OCP cluster
 - ocp_user
 - ocp_pass
+
+
+## MacOS notes:
+use `export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
+
