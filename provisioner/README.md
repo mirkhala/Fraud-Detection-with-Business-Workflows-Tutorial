@@ -4,7 +4,7 @@ Ansible based demo provisioner.
 It currently works with OCP clusters from RHPDS and OpenTLC.
 
 
-##Usage 
+## Usage 
 
 ```
 ansible-playbook provision.yml -e @extra_vars.yml
