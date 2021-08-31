@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  gather_facts: no
+  gather_facts: yes
 
   module_defaults:
     group/k8s:
@@ -87,22 +87,53 @@
           tags: odh
       tags: odh 
 
+    - name: Create machines tasks
+      include_tasks:
+        file: create_machines_tasks.yml
+        apply:
+          tags:
+            - storage
+            - machines
+      tags: 
+        - storage
+        - machines
+        
     - name: OCS Tasks
       include_tasks: 
         file: ocs_install_tasks.yml
         apply: 
-          tags: ocs_install
-      tags: always
+          tags: 
+            - ocs_install
+            - storage
+      tags: storage
+      when: ocs_install == True
+
+    - name: Rook-Ceph Tasks
+      include_tasks:
+        file: rook-ceph_install_tasks.yml
+        apply: 
+          tags: 
+            - rookceph_install
+            - storage
+      tags: storage
+      when: ocs_install == False
+
+    - name: Define OBC for OCS or Rook-Ceph
+      set_fact:
+        obc_file: "../deploy/storage/{{ ocs_install | ternary('obc-ocs.yaml','obc-rook.yaml') }}"
+      tags: 
+        - create_bucket
+        - storage
 
     - name: Create Bucket in OCS through Object Bucket Claim
       k8s:
         state: present
         namespace: "{{ demo_name }}"
-        definition: "{{ lookup('file', '../deploy/storage/obc-ocs.yaml') | from_yaml }}"
+        definition: "{{ lookup('file', obc_file) | from_yaml }}"
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
       tags: 
-        - ocs_upload_data
         - create_bucket
+        - storage
 
     - name: Deploy the Fraud Detection model with Seldon
       k8s:
@@ -137,7 +168,7 @@
 
     - name: Wait for service availability
       pause:
-        seconds: 30
+        seconds: 60
       tags: fraud_model
 
     - name: Simulate a transaction
@@ -148,14 +179,36 @@
         body: 
           strData: "0.365194527642578,0.819750231339882,-0.5927999453145171,-0.619484351930421,-2.84752569239798,1.48432160780265,0.499518887687186,72.98" 
       register: simul_transaction
-      tags: fraud_model
+      tags: 
+        - fraud_model
+        - simul_transaction
+
+    - name: Enable Prometheus service monitor
+      k8s:
+        state: present
+        namespace: "{{ demo_name }}"
+        definition: "{{ lookup('file', '../deploy/model/modelfull-servicemonitor.yaml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: 
+        - fraud_model
+        - prometheus
+
+    - name: Enable Prometheus service monitor
+      k8s:
+        state: present
+        namespace: "{{ demo_name }}"
+        definition: "{{ lookup('file', '../deploy/model/modelfull-custom-metrics-monitor.yaml') | from_yaml }}"
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+      tags: 
+        - fraud_model
+        - prometheus
 
     - name: Upload data to OCS/ODF tasks
       include_tasks: 
         file: upload_data_tasks.yml
         apply: 
-          tags: ocs_upload_data
-      tags: ocs_upload_data
+          tags: upload_data
+      tags: upload_data
 
     - name: KIE Server tasks
       include_tasks:
