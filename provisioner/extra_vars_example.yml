@@ -1,0 +1,14 @@
+---
+ocp_host: API URL
+ocp_user: OPC_USER
+ocp_pass: OCP_PASS
+demo_name: ccfd
+strimzi: true
+csv_url: https://s3.amazonaws.com/com.redhat.csds.odh.tutorial-data/data_creditcard.csv
+
+ocs_install: true
+ocs_version: stable-4.7
+ocs_ns: "{{ ocs_install | ternary('openshift-storage', 'rook-ceph') }}"
+s3_name: s3
+
+kie_app_name: quay.io/odh-workshops/ccfd-business-workflow-tutorial-ccfd-seldon-usertask-model:1.1-CCFD
