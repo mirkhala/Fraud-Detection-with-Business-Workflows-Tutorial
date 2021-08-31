@@ -5,7 +5,7 @@
       pause:
         seconds: 5 
 
-    - name: Check status of rgw pod in openshift-storage ns
+    - name: Check status of rgw pod in storage ns
       k8s_info:
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
         api_version: v1
