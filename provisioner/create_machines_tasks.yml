@@ -1,0 +1,25 @@
+---
+- name: OCS - Get machineset info
+  k8s_info:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    api_version: machine.openshift.io/v1beta1
+    kind: MachineSet
+    namespace: openshift-machine-api
+  register: machineset_info
+
+- name: set cluster id, image id from machineset info
+  set_fact:
+    cluster_id: "{{ machineset_info.resources[0].metadata.labels['machine.openshift.io/cluster-api-cluster'] }}"
+    image_id: "{{ machineset_info.resources[0].spec.template.spec.providerSpec.value.ami.id }}"
+
+- name: OCS - Create a Machineset for OCS deployment
+  k8s:
+    api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+    state: present
+    definition: "{{ lookup('template', 'templates/ocslab_cluster-workerocs.yaml.j2') }}"
+
+- name: OCS - check machines 
+  include_tasks: check_ocp_machines.yml
+
+- name: OCS - check nodes
+  include_tasks: check_ocp_nodes_ocs.yml
