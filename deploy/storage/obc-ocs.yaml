@@ -4,4 +4,4 @@ metadata:
   name: ccdata
 spec:
   generateBucketName: ccdata
-  storageClassName: ocs-storagecluster-ceph-rgw
+  storageClassName: openshift-storage.noobaa.io 
