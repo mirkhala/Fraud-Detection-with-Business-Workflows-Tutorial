@@ -29,27 +29,28 @@
 - name: Store bucket name
   set_fact:
     bucket_name: "{{ cm_list.resources[0].data.BUCKET_NAME }}"
+    host_internal_access: "{{ cm_list.resources[0].data.BUCKET_HOST }}"
 
 - name: Show Host(Internal Access)
   debug:
-    msg: "{{ cm_list.resources[0].data.BUCKET_HOST }}"
+    msg: "http://{{ host_internal_access }}"
 
 - name: Get External Access (Route)
   k8s_info:
     api_version: route.openshift.io/v1
     kind: Route
-    name: s3
-    namespace: openshift-storage
+    name: "{{ s3_name }}"
+    namespace: "{{ ocs_ns }}"
     api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
   register: route_list
     
 - name: Store host_external_access
   set_fact:
-    host_external_access: "{{ route_list.resources[0].spec.host }}"
+    host_external_access: "https://{{ route_list.resources[0].spec.host }}"
 
 - name: Show Host(External Access)
   debug:
-    msg: "{{ route_list.resources[0].spec.host }}"
+    msg: host_external_access
 
 - name: Create Secret to store keys
   k8s:
@@ -78,9 +79,13 @@
   aws_s3:
     aws_access_key: "{{ bucket_access_key }}"
     aws_secret_key: "{{ bucket_secret_key }}"
-    s3_url: "https://{{ host_external_access }}"
+    s3_url: "{{ host_external_access }}"
     bucket: "{{ bucket_name }}"
     src: "{{ csv_datafile }}"
-    object: "/OPEN/uploaded/creditcard.csv" 
+    object: "/OPEN/uploaded/creditcard.csv"
     mode: put
-    permission: public-read-write
+    permission: 
+      - public-read-write
+    validate_certs: true
+    encrypt: false
+    rgw: yes
