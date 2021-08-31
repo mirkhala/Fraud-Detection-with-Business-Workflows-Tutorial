@@ -193,7 +193,7 @@
         - fraud_model
         - prometheus
 
-    - name: Enable Prometheus service monitor
+    - name: Enable Prometheus custom metrics monitor
       k8s:
         state: present
         namespace: "{{ demo_name }}"
