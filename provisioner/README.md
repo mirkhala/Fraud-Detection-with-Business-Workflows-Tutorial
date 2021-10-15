@@ -3,6 +3,15 @@
 Ansible based demo provisioner.
 It currently works with OCP clusters from RHPDS and OpenTLC.
 
+## Installation
+
+Clone this repo, change to the correct branch (if needed), then:
+
+```
+python3 -m venv myenv
+pip install pip --upgrade
+pip install -r requirements.txt 
+```
 
 ## Usage 
 
