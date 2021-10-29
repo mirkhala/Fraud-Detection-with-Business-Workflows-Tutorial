@@ -26,7 +26,7 @@ where `extra_vars.yml` contains the following variables:
 - `ocs_version`: supported ODF/OCS version of your OCP cluster version, such as `stable-4.6`
 
 Regarding `ocs_version`, it should be same version as OCP cluster, or 
-one version above and below (OCP = 4.7 &rarr ODF/OCS = 4.6, 4.7, 4.8).
+one version above and below (OCP = 4.7 &rarr; ODF/OCS = 4.6, 4.7, 4.8).
 
 See `extra_vars_example.yml` as example.
 
