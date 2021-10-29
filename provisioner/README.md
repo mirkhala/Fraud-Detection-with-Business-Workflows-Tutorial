@@ -3,6 +3,15 @@
 Ansible based demo provisioner.
 It currently works with OCP clusters from RHPDS and OpenTLC.
 
+## Installation
+
+Clone this repo, change to the correct branch (if needed), then:
+
+```
+python3 -m venv myenv
+pip install pip --upgrade
+pip install -r requirements.txt 
+```
 
 ## Usage 
 
@@ -18,6 +27,9 @@ where `extra_vars.yml` contains the following variables:
 
 Regarding `ocs_version`, it should accept same version as OCP cluster and 
 one version above and below (OCP = 4.7 ==> ODF/OCS = 4.6, 4.7, 4.8).
+
+See `extra_vars_example.yml` as example.
+
 
 ## MacOS notes:
 
