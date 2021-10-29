@@ -6,21 +6,21 @@ metadata:
     machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
     machine.openshift.io/cluster-api-machine-role: workerocs
     machine.openshift.io/cluster-api-machine-type: workerocs
-  name: {{ cluster_id }}-workerocs-us-east-2a
+  name: {{ cluster_id }}-workerocs-{{ region }}a
   namespace: openshift-machine-api
 spec:
   replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
-      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2a
+      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}a
   template:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
         machine.openshift.io/cluster-api-machine-type: workerocs
-        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2a
+        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}a
     spec:
       metadata:
         labels:
@@ -47,8 +47,8 @@ spec:
           metadata:
             creationTimestamp: null
           placement:
-            availabilityZone: us-east-2a
-            region: us-east-2
+            availabilityZone: {{ region }}a
+            region: {{ region }}
           publicIp: null
           securityGroups:
           - filters:
@@ -59,7 +59,7 @@ spec:
             filters:
             - name: tag:Name
               values:
-              - {{ cluster_id }}-private-us-east-2a
+              - {{ cluster_id }}-private-{{ region }}a
           tags:
           - name: kubernetes.io/cluster/{{ cluster_id }}
             value: owned
@@ -75,21 +75,21 @@ metadata:
     machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
     machine.openshift.io/cluster-api-machine-role: workerocs
     machine.openshift.io/cluster-api-machine-type: workerocs
-  name: {{ cluster_id }}-workerocs-us-east-2b
+  name: {{ cluster_id }}-workerocs-{{ region }}b
   namespace: openshift-machine-api
 spec:
   replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
-      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2b
+      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}b
   template:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
         machine.openshift.io/cluster-api-machine-type: workerocs
-        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2b
+        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}b
     spec:
       metadata:
         labels:
@@ -116,8 +116,8 @@ spec:
           metadata:
             creationTimestamp: null
           placement:
-            availabilityZone: us-east-2b
-            region: us-east-2
+            availabilityZone: {{ region }}b
+            region: {{ region }}
           publicIp: null
           securityGroups:
           - filters:
@@ -128,7 +128,7 @@ spec:
             filters:
             - name: tag:Name
               values:
-              - {{ cluster_id }}-private-us-east-2b
+              - {{ cluster_id }}-private-{{ region }}b
           tags:
           - name: kubernetes.io/cluster/{{ cluster_id }}
             value: owned
@@ -144,21 +144,21 @@ metadata:
     machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
     machine.openshift.io/cluster-api-machine-role: workerocs
     machine.openshift.io/cluster-api-machine-type: workerocs
-  name: {{ cluster_id }}-workerocs-us-east-2c
+  name: {{ cluster_id }}-workerocs-{{ region }}c
   namespace: openshift-machine-api
 spec:
   replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
-      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2c
+      machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}c
   template:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: {{ cluster_id }}
         machine.openshift.io/cluster-api-machine-role: workerocs
         machine.openshift.io/cluster-api-machine-type: workerocs
-        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-us-east-2c
+        machine.openshift.io/cluster-api-machineset: {{ cluster_id }}-workerocs-{{ region }}c
     spec:
       metadata:
         labels:
@@ -185,8 +185,8 @@ spec:
           metadata:
             creationTimestamp: null
           placement:
-            availabilityZone: us-east-2c
-            region: us-east-2
+            availabilityZone: {{ region }}c
+            region: {{ region }}
           publicIp: null
           securityGroups:
           - filters:
@@ -197,7 +197,7 @@ spec:
             filters:
             - name: tag:Name
               values:
-              - {{ cluster_id }}-private-us-east-2c
+              - {{ cluster_id }}-private-{{ region }}c
           tags:
           - name: kubernetes.io/cluster/{{ cluster_id }}
             value: owned

@@ -11,6 +11,7 @@
   set_fact:
     cluster_id: "{{ machineset_info.resources[0].metadata.labels['machine.openshift.io/cluster-api-cluster'] }}"
     image_id: "{{ machineset_info.resources[0].spec.template.spec.providerSpec.value.ami.id }}"
+    region: "{{ machineset_info.resources[0].spec.template.spec.providerSpec.value.placement.region }}"
 
 - name: OCS - Create a Machineset for OCS deployment
   k8s:
